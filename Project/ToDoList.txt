@@ -1,0 +1,35 @@
+TEST and DONE:
+v gRPC Greetings
+v gRPC Ride Request
+v gRPC Recharge Request
+v gRPC District Change
+v Taxi Final SetUp
+v TIMEOUT TEST
+Test if while sleeping another can call a gRPC and use one of the methods of the sleeping taxi
+IT WORKS, The Taxi can call a gRPC and the gRPC Client of the Sleeping taxi can respond 
+and call the methods of the sleeping taxi itself.
+V Heart beat
+V Exiting
+V Initial Set-Up with SETA
+V Test Initial Set-Up
+V Stat
+V Test Stat
+V Administrator Client (Create the response to REST request in Administrator Server)
+V SETA List InTravel
+V SETA check if died during travel
+V SETA List Completed
+V RideRequest Election problem
+
+IN PROGRESS:
+=> While Ride Request election
+    - Taxi death to SETA even if no one has died
+    - Ride Reqeust in travel and complete sent 2 times
+
+=> Check if a Taxi is Dead (Unless Terminate gRPC), communicate it to SETA
+SETA Checks if taxi was Traveling and remove ride request from list inTravel
+put it into Sent
+
+TO DO:
+- TaxiInputThread (When to re-pop the Menu Screen?)
+
+Remove .git before zipping

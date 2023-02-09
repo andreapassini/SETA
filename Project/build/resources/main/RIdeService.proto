@@ -1,0 +1,108 @@
+syntax = "proto3";
+package com.example.grpc;
+
+message Position{
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message Ride{
+  int32 rideId = 1;
+  Position startingPosition = 2;
+  Position endingPosition = 3;
+}
+
+// Request payload
+message RideRequest{
+  Ride ride = 1;
+  int32 taxiId = 2;
+  float distance = 3;
+  int32 batteryLevel = 4;
+  int32 timeStamp = 5;
+}
+
+// Response (in Richard Agrawal is just an OK)
+message RideResponse{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+enum District{
+  D1 = 0;
+  D2 = 1;
+  D3 = 2;
+  D4 = 3;
+}
+
+// To change district
+message TaxiDistrictRequest{
+  int32 taxiId = 1;
+  District previousDistrict = 2;
+  District newDistrict = 3;
+  int32 timeStamp = 4;
+}
+
+message TaxiDistrictResponse{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+message RechargeRequest{
+  int32 taxiId = 1;
+  Position rechargeStation = 2;
+  int32 timeStamp = 3;
+}
+
+message RechargeResponse{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+message GreetingsRequest{
+  int32 taxiId = 1;
+  int32 port = 2;
+  int32 district = 3;
+  int32 timeStamp = 4;
+}
+
+message GreetingsResponse{
+  int32 taxiId = 1;
+  int32 district = 2;
+  int32 timeStamp = 3;
+}
+
+message ExitRequest{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+message ExitResponse{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+message HearthBeatRequest{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+message HearthBeatResponse{
+  int32 taxiId = 1;
+  int32 timeStamp = 2;
+}
+
+service RideService{
+  rpc greetings(GreetingsRequest) returns (GreetingsResponse);
+
+  rpc reserveRide(RideRequest) returns (RideResponse);
+
+  rpc changeDistrict(TaxiDistrictRequest) returns (TaxiDistrictResponse);
+
+  rpc reserveRecharger(RechargeRequest) returns (RechargeResponse);
+
+  rpc releaseRecharger(RechargeResponse) returns (RechargeResponse);
+
+  rpc leavingSystem(ExitRequest) returns (ExitResponse);
+
+  rpc hearthBeat(HearthBeatRequest) returns (HearthBeatResponse);
+}

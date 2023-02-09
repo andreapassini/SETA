@@ -1,0 +1,65 @@
+
+
+-- START --
+Taxi: asks id to SETA
+SETA: gives id
+SETA: gives position
+SETA: gives taxi list
+
+Taxi: Presents itself to taxi list
+Taxi: Starts heart beat
+Taxi: Waits for a ride request
+
+
+-- Ride Request --
+SETA: pub a Ride Request
+Taxi A: Starts election(Richart-Agrawal)
+Taxi A: tell SETA handled
+Taxi A: sends out ride request to its district
+Taxi B: if TAXI is better
+    => Do not respond
+    => Sent out ride request
+    if TAXI is worst
+    => respond ok
+it goes on until taxi receive all "ok"
+
+IF Taxi Dead during Election
+=> catch it from heart beat
+=> Tell SETA
+=> remove from list of taxi
+=> Check again sent-received
+
+IF Taxi Exit
+wait until end of election and responding "ok"
+
+
+-- Won Election --
+Taxi: set busy = true
+Taxi: tell SETA ride is being in travel
+Taxi: tell everyone ride won
+
+-- Travel --
+taxi: goes to sleep for 5 sec
+taxi: tell SETA travel complete
+taxi: calculate new district
+    if true
+        tell SETA new district
+        tell taxi list new district
+set busy = false
+
+IF Taxi Dead during Election
+=> catch it from heart beat
+=> Tell SETA
+=> remove from list of taxi
+=> SETA: update list in travel and complete
+
+IF Taxi Exit
+wait until end of travel and EXIT
+
+-- EXIT --
+Taxi: tell everyone it's exiting
+Taxi: tell SETA it's exiting
+
+-- Heart Beat --
+Taxi: Sends hearth beat to all taxi list
+All taxi list: Respond to heart beat

@@ -1,0 +1,19 @@
+package it.ewlab.actor;
+
+message Actor {
+	required string name = 1;
+	required string surname = 2;
+
+	enum Sex {
+		MALE = 0;
+		FEMALE = 1;
+	}
+
+	message Movie {
+        required string title = 1;
+        required int32 year = 2;
+    }
+
+	repeated Movie movie = 3;
+	optional Sex sex = 4;
+}
