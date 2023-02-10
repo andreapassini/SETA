@@ -177,7 +177,7 @@ If in a district there is no Taxi that is available to take charge of a ride,
 such a ride must not be discarded. SETA will manage this problem using multiple list of ride request sent, as presented in the section **Ride Request Management**.
 
 
-#### Sending information to the server
+#### Sending information to the server {#sendingInfo}
 
 Every 15 seconds, each Taxi has to compute and communicate to the *administrator server* the following local statistics (computed during this interval of 15 seconds):
 - The **number of kilometers traveled** to accomplish the rides of the taxi.
@@ -210,10 +210,12 @@ The recharging operation is simulated through a Thread.sleep() of 10 seconds.
 
 It is assumed that each Taxi terminates only in a controlled way. Specifically, only when the message ”quit” is inserted into the command line of a taxi process, the taxi will leave the system. In both cases, to leave the system, a Taxi must follow the next steps:
 
-- complete the possible ride it is involved in, sending to the Administrator Server the information described in Section **sending information to the server**.
+- complete the possible ride it is involved in, sending to the Administrator Server the information described in Section [sending information to the server](#sendingInfo).
 - complete any battery recharge • notify the other taxis of the smart city • request the Administrator Server to leave the smart city.
 
 ### Un-controlled termination
+
+
 
 ### Pollution sensors
 
@@ -222,12 +224,14 @@ Each taxi is equipped with a sensor that periodically detects the air pollution 
 - PM10 value
 - Timestamp of the measurement, expressed in milliseconds
 
-The generation of such measurements is produced by a simulator. In order to simplify the project implementation, it is possible to download the code of the simulator directly from the page of the course on Moodle, under the section Projects. Each simulator assigns the number of seconds after midnight as the timestamp associated with a measurement. The code of the simulator must be added as a package to the project, and it must not be modified. During the initialization step, each Taxi launches the simulator thread that will generate the measurements for the air pollution sensor. Each simulator is a thread that consists of an infinite loop that periodically generates (with a pre-defined frequency) the simulated measurements. Such measurements are added to a proper data structure. We only provide the interface (Buffer) of this data structure that exposes two methods:
+The generation of such measurements is produced by a simulator. Each simulator assigns the number of seconds after midnight as the timestamp associated with a measurement. During the initialization step, each Taxi launches the simulator thread that will generate the measurements for the air pollution sensor. Each simulator is a thread that consists of an infinite loop that periodically generates (with a pre-defined frequency) the simulated measurements. Such measurements are added to a proper data structure. The interface (Buffer) of this data structure  exposes two methods:
 
-- void add(Measurement m)
-- List <Measurement> readAllAndClean()
+```
+void add(Measurement m)
+List <Measurement> readAllAndClean()
+```
 
-Thus, it is necessary to create a class that implements this interface. Note that each Taxi is equipped with a single sensor. The simulation thread uses the method addMeasurement to fill the data structure. Instead, the method readAllAndClean, must be used to obtain the measurements stored in the data structure. At the end of a read operation, readAllAndClean makes room for new measurements in the buffer. Process sensor data is processed through the sliding window technique that was introduced in the theory lessons. Bufffer of 8 measurements, with an overlap factor of 50%. When the dimension of the buffer is equal to 8 measurements, compute the average of these 8 measurements. A Taxi will send these averages to the Administrator Server with the other information about the ride it accomplished.
+Note that each Taxi is equipped with a single sensor. The simulation thread uses the method addMeasurement to fill the data structure. Instead, the method readAllAndClean, must be used to obtain the measurements stored in the data structure. At the end of a read operation, readAllAndClean makes room for new measurements in the buffer. Process sensor data is processed through the sliding window technique that was introduced in the theory lessons. Bufffer of 8 measurements, with an overlap factor of 50%. When the dimension of the buffer is equal to 8 measurements, compute the average of these 8 measurements. A Taxi will send these averages to the Administrator Server with the other information about the ride it accomplished.
 
 
 
