@@ -111,7 +111,7 @@ Whenever a taxi starts traveling with a specific ride request, it will publish i
 Whenever a taxi completes a ride, it will publish on the right topic its accomplishment, SETA will add its id and the ride's id to the list
 
 
-If a taxi un-controlled terminatio is catched by the other taxis in the system and publish on the correct topic, SETA check if that taxi was traveling with a specific ride request, in that case will remove the ride from the *Ride in Travel* and will add it back to the list *Ride Request Sent*, ready to be published again.
+If a taxi un-controlled termination is catched by the other taxis in the system and publish on the correct topic, SETA check if that taxi was traveling with a specific ride request, in that case will remove the ride from the *Ride in Travel* and will add it back to the list *Ride Request Sent*, ready to be published again.
 
 ## Taxi
 
@@ -174,4 +174,62 @@ d(P1, P2) = sqrt((x1 -x2)^2 + (y2 - y1)^2)
 ```
 
 If in a district there is no Taxi that is available to take charge of a ride,
-such a ride must not be discarded. SETA will manage this problem using multiple list of ride request sent.
+such a ride must not be discarded. SETA will manage this problem using multiple list of ride request sent, as presented in the section **Ride Request Management**.
+
+
+#### Sending information to the server
+
+Every 15 seconds, each Taxi has to compute and communicate to the *administrator server* the following local statistics (computed during this interval of 15 seconds):
+- The **number of kilometers traveled** to accomplish the rides of the taxi.
+- The **number of rides accomplished** by the taxi.
+- The list of the **averages of the pollution levels measurements**.
+Once the local statistics have been computed, the *Taxié sends them to the *Administrator Server* associated with
+- The ID of the *Taxi*.
+- The **timestamp** in which the local statistics were computed.
+- The *current battery level* of the Taxi.
+
+### Battery consumption
+
+A *Taxi* consumes 1% of its battery level for each kilometer traveled to accomplish a ride. For simplicity, it is assumed that the battery consumption is computed only at the end of each ride.
+
+When the battery level of the *Taxi* is below 30%, the taxi must go to the
+recharge station of its district. A recharge station may be accessed only by a single taxi at a time. It is also possible to explicitly ask a Taxi to recharge its battery through a specific command (i.e., recharge) on the command line.
+
+To coordinate the *Taxi* it has been implemented the distributed algorithm for mutual exclusion ***Ricart–Agrawala***. (The same used for ride coordination)
+
+The **clocks** of the *Taxis* are not synchronized and it has been implemented Lamport's Algorithm to enusre total order.
+
+If a taxi takes part to the mutual exclusion algorithm in order to recharge its battery, it cannot accept any rides until the recharging process of its battery is completed. Moreover, when a taxi acquires rights to recharge its battery:
+
+- it consumes 1% of its battery level for each kilometer traveled to reach the recharge station
+- its position becomes the same as the cell of the recharge station of the district in which the taxi is currently positioned.
+
+The recharging operation is simulated through a Thread.sleep() of 10 seconds.
+
+### Explicit closure
+
+It is assumed that each Taxi terminates only in a controlled way. Specifically, only when the message ”quit” is inserted into the command line of a taxi process, the taxi will leave the system. In both cases, to leave the system, a Taxi must follow the next steps:
+
+- complete the possible ride it is involved in, sending to the Administrator Server the information described in Section **sending information to the server**.
+- complete any battery recharge • notify the other taxis of the smart city • request the Administrator Server to leave the smart city.
+
+### Un-controlled termination
+
+### Pollution sensors
+
+Each taxi is equipped with a sensor that periodically detects the air pollution level of the smart city. Each pollution sensor periodically produces measurements of the level of fine particles in the air (PM10). Every single measurement is characterized by:
+
+- PM10 value
+- Timestamp of the measurement, expressed in milliseconds
+
+The generation of such measurements is produced by a simulator. In order to simplify the project implementation, it is possible to download the code of the simulator directly from the page of the course on Moodle, under the section Projects. Each simulator assigns the number of seconds after midnight as the timestamp associated with a measurement. The code of the simulator must be added as a package to the project, and it must not be modified. During the initialization step, each Taxi launches the simulator thread that will generate the measurements for the air pollution sensor. Each simulator is a thread that consists of an infinite loop that periodically generates (with a pre-defined frequency) the simulated measurements. Such measurements are added to a proper data structure. We only provide the interface (Buffer) of this data structure that exposes two methods:
+
+- void add(Measurement m)
+- List <Measurement> readAllAndClean()
+
+Thus, it is necessary to create a class that implements this interface. Note that each Taxi is equipped with a single sensor. The simulation thread uses the method addMeasurement to fill the data structure. Instead, the method readAllAndClean, must be used to obtain the measurements stored in the data structure. At the end of a read operation, readAllAndClean makes room for new measurements in the buffer. Process sensor data is processed through the sliding window technique that was introduced in the theory lessons. Bufffer of 8 measurements, with an overlap factor of 50%. When the dimension of the buffer is equal to 8 measurements, compute the average of these 8 measurements. A Taxi will send these averages to the Administrator Server with the other information about the ride it accomplished.
+
+
+
+
+
