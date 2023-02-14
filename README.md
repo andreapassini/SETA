@@ -231,7 +231,59 @@ void add(Measurement m)
 List <Measurement> readAllAndClean()
 ```
 
-Note that each Taxi is equipped with a single sensor. The simulation thread uses the method addMeasurement to fill the data structure. Instead, the method readAllAndClean, must be used to obtain the measurements stored in the data structure. At the end of a read operation, readAllAndClean makes room for new measurements in the buffer. Process sensor data is processed through the sliding window technique that was introduced in the theory lessons. Bufffer of 8 measurements, with an overlap factor of 50%. When the dimension of the buffer is equal to 8 measurements, compute the average of these 8 measurements. A Taxi will send these averages to the Administrator Server with the other information about the ride it accomplished.
+Note that each Taxi is equipped with a single sensor. The simulation thread uses the method addMeasurement to fill the data structure. Instead, the method readAllAndClean, must be used to obtain the measurements stored in the data structure. At the end of a read operation, readAllAndClean makes room for new measurements in the buffer. Process sensor data is processed through the sliding window technique. Bufffer of 8 measurements, with an overlap factor of 50%. When the dimension of the buffer is equal to 8 measurements, compute the average of these 8 measurements. A Taxi will send these averages to the Administrator Server with the other information about the ride it accomplished.
+
+
+## Administrator server
+
+The Administrator Server collects the IDs of the taxis registered to the system, and also receives from the taxis their local statistics. This information will then be queried by the administrators of the system (**Administrator Client**). Thus, this server has to provide different REST interfaces for:
+
+- managing the taxis network
+- receiving the local statistics from the taxis
+- enabling the administrators to execute the queries
+
+### Taxis interface
+
+#### Insertion
+
+The server has to store the following information for each taxi joining the smart city:
+
+- **ID**
+- **IP address** (localhost in this case)
+- **Port Number** on which it is available to handle the communication with other taxis
+
+Moreover, the server is in charge of assigning to each joining taxi a randomly chosen district of the smart city. A *Taxi* can be added to the network only if there are no other taxis with the same identifier. If the insertion succeeds, the *Administrator Server* returns to the *Taxi*
+
+- the starting position of the taxi in the smart city, i.e., the position of the recharge station of the randomly chosen district
+
+- the list of taxis already located in the smart city, specifying for each of them the related ID, IP address, and the port number for communication
+
+
+#### Removal
+
+Whenever a Taxi asks the Administrator Server to leave the system, the server has to remove it from the data structure representing the smart city.
+
+#### Statistics
+
+The *Administrator Server* must provide an interface to receive the local statistics from the taxis of the smart city. These data have to be stored in proper data structures that will be used to perform subsequent analysis. Indeed, the taxis of the smart city could send their local statistics while the *Administrator Client* is requesting to the *Administrator Server* to perform some computations on such statistics.
+
+
+### Administrator interface
+
+When requested by the Administrator Client through the interface descripted in Section 7, the *Administrator Server* must be able to compute the following statistics:
+
+- The list of the taxis currently located in the smart city
+- The average of the last n local statistics of a given Taxi. In particular, it has to compute the average number of:
+  - travelled kilometers
+  - battery level
+  - pollution level
+  - number of accomplished rides
+- The average of the previously introduced statistics provided by all the taxis and occurred from timestamps *t1* and *t2*
+
+
+## Administrator Client
+
+The *Administrator Client* consists of a simple command-line interface that enables interacting with the *REST* interface provided by the *Administrator Server*. Hence, this application prints a straightforward menu to select one of the services offered by the administrator server and to enter possible required parameters.
 
 
 
