@@ -285,6 +285,11 @@ When requested by the Administrator Client through the interface descripted in S
 
 The *Administrator Client* consists of a simple command-line interface that enables interacting with the *REST* interface provided by the *Administrator Server*. Hence, this application prints a straightforward menu to select one of the services offered by the administrator server and to enter possible required parameters.
 
+## Grandle e Java Version
+
+- grandle 6.7
+- Java version 1.8.0_332
+
 
 
 
